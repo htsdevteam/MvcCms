@@ -15,6 +15,10 @@ namespace MvcCms.Areas.Admin.Controllers
     {
         private readonly IPostRepository _repository;
 
+        public PostController()
+            : this(new PostRepository())
+        { }
+
         public PostController(IPostRepository repository)
         {
             _repository = repository;
@@ -31,7 +35,7 @@ namespace MvcCms.Areas.Admin.Controllers
         [Route("create")]
         public ActionResult Create()
         {
-            var model = new Post();
+            var model = new Post() { Tags = new List<string>() { "test-1", "test-2" } };
             return View(model);
         }
 
