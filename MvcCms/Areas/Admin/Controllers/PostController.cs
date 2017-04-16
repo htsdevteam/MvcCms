@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MvcCms.Data;
 
 namespace MvcCms.Areas.Admin.Controllers
 {
@@ -12,9 +13,17 @@ namespace MvcCms.Areas.Admin.Controllers
     [RoutePrefix("post")]
     public class PostController : Controller
     {
+        private readonly IPostRepository _repository;
+
+        public PostController(IPostRepository repository)
+        {
+            _repository = repository;
+        }
+
         // GET: admin/post
         public ActionResult Index()
         {
+            IEnumerable<Post> posts = _repository.GetAll();
             return View();
         }
 
@@ -38,31 +47,44 @@ namespace MvcCms.Areas.Admin.Controllers
             }
 
             // TODO: update model in data store
+            _repository.Create(model);
 
             return RedirectToAction("index");
         }
 
         // /admin/post/edit/post-to-edit
-        [Route("edit/{id}")]
-        public ActionResult Edit(string id)
+        [Route("edit/{postId}")]
+        public ActionResult Edit(string postId)
         {
             // TODO: to retrieve the model from the data store
-            var model = new Post();
-            return View(model);
+            Post post = _repository.Get(postId);
+
+            if (post == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(post);
         }
 
         // /admin/post/edit/post-to-edit
         [HttpPost]
-        [Route("edit/{id}")]
+        [Route("edit/{postId}")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Post model)
+        public ActionResult Edit(string postId, Post model)
         {
+            Post post = _repository.Get(postId);
+            if (post == null)
+            {
+                return HttpNotFound();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            // TODO: update model in data store
+            _repository.Edit(postId, model);
 
             return RedirectToAction("index");
         }
