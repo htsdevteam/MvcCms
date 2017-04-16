@@ -7,11 +7,12 @@ using System.Web.Mvc;
 
 namespace MvcCms.Areas.Admin.Controllers
 {
-    [RouteArea("Admin")]
+    // /admin/post
+    [RouteArea("admin")]
     [RoutePrefix("post")]
     public class PostController : Controller
     {
-        // GET: Admin/Post
+        // GET: admin/post
         public ActionResult Index()
         {
             return View();
@@ -28,6 +29,7 @@ namespace MvcCms.Areas.Admin.Controllers
         // /admin/post/create
         [HttpPost]
         [Route("create")]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(Post model)
         {
             if (!ModelState.IsValid)
@@ -52,6 +54,7 @@ namespace MvcCms.Areas.Admin.Controllers
         // /admin/post/edit/post-to-edit
         [HttpPost]
         [Route("edit/{id}")]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(Post model)
         {
             if (!ModelState.IsValid)
