@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using MvcCms.Models;
 using MvcCms.Models.ModelBinders;
+using MvcCms.App_Start;
 
 namespace MvcCms
 {
@@ -15,6 +16,8 @@ namespace MvcCms
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            AuthDbConfig.RegisterAdmin();
+
             ModelBinders.Binders.Add(typeof(Post), new PostModelBinder());
         }
     }
