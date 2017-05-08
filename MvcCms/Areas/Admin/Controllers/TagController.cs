@@ -48,7 +48,7 @@ namespace MvcCms.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-            if (!tags.Contains(newTag))
+            if (tags.Contains(newTag))
             {
                 return RedirectToAction("index");
             }
