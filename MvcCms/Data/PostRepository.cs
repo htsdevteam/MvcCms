@@ -60,5 +60,20 @@ namespace MvcCms.Data
                 return db.Posts.Include("Author").OrderByDescending(p => p.Created).ToArray();
             }
         }
+
+        public void Delete(string id)
+        {
+            using (var db = new CmsContext())
+            {
+                var post = db.Posts.SingleOrDefault(p => p.Id == id);
+                if (post == null)
+                {
+                    throw new KeyNotFoundException(
+                        string.Format("The post with the id of {0} does not exist.", id));
+                }
+                db.Posts.Remove(post);
+                db.SaveChanges();
+            }
+        }
     }
 }

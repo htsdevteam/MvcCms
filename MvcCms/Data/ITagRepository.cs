@@ -9,8 +9,8 @@ namespace MvcCms.Data
     public interface ITagRepository
     {
         IEnumerable<string> GetAll();
-        bool Exists(string tag);
         void Edit(string existingTag, string newTag);
         void Delete(string tag);
+        string Get(string tag);
     }
 }

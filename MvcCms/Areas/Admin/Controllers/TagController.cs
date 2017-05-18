@@ -25,11 +25,15 @@ namespace MvcCms.Areas.Admin.Controllers
 
         public ActionResult Edit(string tag)
         {
-            if (!_repository.Exists(tag))
+            try
+            {
+                var model = _repository.Get(tag);
+                return View(model);
+            }
+            catch (KeyNotFoundException)
             {
                 return HttpNotFound();
             }
-            return View(tag);
         }
 
         [HttpPost]
@@ -60,23 +64,29 @@ namespace MvcCms.Areas.Admin.Controllers
 
         public ActionResult Delete(string tag)
         {
-            if (!_repository.Exists(tag))
+            try
+            {
+                string model = _repository.Get(tag);
+                return View(model);
+            }
+            catch (KeyNotFoundException)
             {
                 return HttpNotFound();
             }
-            return View(tag);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string tag, bool foo)
         {
-            if (!_repository.Exists(tag))
+            try
+            {
+                _repository.Delete(tag);
+            }
+            catch (KeyNotFoundException)
             {
                 return HttpNotFound();
             }
-
-            _repository.Delete(tag);
 
             return RedirectToAction("index");
         }
