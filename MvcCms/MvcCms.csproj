@@ -142,7 +142,9 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\PostController.cs" />
     <Compile Include="Areas\Admin\Controllers\TagController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Data\CmsContext.cs" />
+    <Compile Include="Data\IdentityClasses.cs" />
     <Compile Include="Data\ITagRepository.cs" />
     <Compile Include="Data\IPostRepository.cs" />
     <Compile Include="Data\PostRepository.cs" />
@@ -172,6 +174,7 @@
     <Content Include="Areas\Admin\Views\Shared\EditorTemplates\TagEditor.cshtml" />
     <Content Include="Areas\Admin\Views\Post\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Post\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
