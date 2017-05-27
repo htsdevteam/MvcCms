@@ -27,7 +27,7 @@ namespace MvcCms.Data
                         "A post with the id of {0} already exists", model.Id));
                 }
 
-                db.Posts.Attach(model);
+                db.Posts.Add(model);
                 db.SaveChanges();
             }
         }

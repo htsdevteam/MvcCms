@@ -25,10 +25,11 @@ namespace MvcCms.Areas.Admin.Controllers
         }
 
         // GET: admin/post
+        [Route("")]
         public ActionResult Index()
         {
             IEnumerable<Post> posts = _repository.GetAll();
-            return View();
+            return View(posts);
         }
 
         // /admin/post/create
@@ -55,6 +56,9 @@ namespace MvcCms.Areas.Admin.Controllers
             }
             model.Id = model.Id.MakeUrlFriendly();
             model.Tags = model.Tags.Select(t => t.MakeUrlFriendly()).ToList();
+            model.Created = DateTime.Now;
+
+            model.AuthorId = "a610b104-20ed-46c6-96f6-5d3e5ccea26e";
 
             try
             {
@@ -63,7 +67,7 @@ namespace MvcCms.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("key", ex);
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
         }
@@ -112,7 +116,7 @@ namespace MvcCms.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("key", ex);
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
         }
@@ -136,7 +140,7 @@ namespace MvcCms.Areas.Admin.Controllers
         [HttpPost]
         [Route("delete/{postId}")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(string postId, bool foo)
+        public ActionResult Delete(string postId, string foo)
         {
             try
             {
