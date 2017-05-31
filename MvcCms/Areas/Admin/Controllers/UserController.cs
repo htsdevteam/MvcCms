@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
+using MvcCms.Areas.Admin.Services;
 using MvcCms.Areas.Admin.ViewModels;
 using MvcCms.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -13,6 +15,19 @@ namespace MvcCms.Areas.Admin.Controllers
     [RoutePrefix("user")]
     public class UserController : Controller
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly UserService _userService;
+        private bool _isDisposed;
+
+        public UserController()
+        {
+            _userRepository = new UserRepository();
+            _roleRepository = new RoleRepository();
+            _userService = new UserService(ModelState,
+                _userRepository, _roleRepository);
+        }
+
         // GET: Admin/User
         [Route("")]
         public ActionResult Index()
@@ -120,6 +135,35 @@ namespace MvcCms.Areas.Admin.Controllers
 
                 return RedirectToAction("index");
             }
+        }
+
+        [Route("create")]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [Route("create")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(UserViewModel vm)
+        {
+            if (await _userService.CreateAsync(vm))
+            {
+                return RedirectToAction("index");
+            }
+            return View(vm);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                _userRepository.Dispose();
+                _roleRepository.Dispose();
+            }
+            _isDisposed = true;
+            base.Dispose(disposing);
         }
     }
 }

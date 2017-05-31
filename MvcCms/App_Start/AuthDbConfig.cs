@@ -5,19 +5,18 @@ using MvcCms.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace MvcCms.App_Start
 {
     public class AuthDbConfig
     {
-        public static void RegisterAdmin()
+        public async static Task RegisterAdmin()
         {
-            using (var context = new CmsContext())
-            using (var userStore = new UserStore<CmsUser>(context))
-            using (var userManager = new UserManager<CmsUser>(userStore))
+            using (var userRepository = new UserRepository())
             {
-                var user = userStore.FindByNameAsync("admin").Result;
+                var user = userRepository.GetUserByName("admin");
 
                 if (user == null)
                 {
@@ -27,7 +26,23 @@ namespace MvcCms.App_Start
                         Email = "admin@cms.com",
                         DisplayName = "Administrator"
                     };
-                    userManager.Create(adminUser, "Passw0rd1234");
+                    await userRepository.CreateAsync(adminUser, "Passw0rd1234");
+                }
+            }
+
+            using (var roleRepository = new RoleRepository())
+            {
+                if (roleRepository.GetRoleByName("admin") == null)
+                {
+                    roleRepository.Create(new IdentityRole("admin"));
+                }
+                if (roleRepository.GetRoleByName("editor") == null)
+                {
+                    roleRepository.Create(new IdentityRole("editor"));
+                }
+                if (roleRepository.GetRoleByName("author") == null)
+                {
+                    roleRepository.Create(new IdentityRole("author"));
                 }
             }
         }
