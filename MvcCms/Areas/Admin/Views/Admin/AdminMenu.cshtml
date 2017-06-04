@@ -1,0 +1,8 @@
+﻿@model IEnumerable<MvcCms.Areas.Admin.ViewModels.AdminMenuItem>
+
+
+@foreach (var item in Model) {
+    <li>
+        @Html.ActionLink(item.Text, item.Action, item.RouteInfo)
+    </li>
+}

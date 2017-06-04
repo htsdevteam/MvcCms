@@ -12,7 +12,7 @@ namespace MvcCms.Data
         {
             using (var db = new CmsContext())
             {
-                return db.Posts.SelectMany(p => p.Tags).Distinct();
+                return db.Posts.SelectMany(p => p.Tags).Distinct().ToList();
             }
         }
 

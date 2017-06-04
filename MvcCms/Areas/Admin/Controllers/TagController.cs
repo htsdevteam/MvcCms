@@ -12,18 +12,23 @@ namespace MvcCms.Areas.Admin.Controllers
     {
         private readonly ITagRepository _repository;
 
+        public TagController() : this (new TagRepository())
+        { }
+
         public TagController(ITagRepository repository)
         {
             _repository = repository;
         }
 
         // GET: Admin/Tag
+        [Route("")]
         public ActionResult Index()
         {
             IEnumerable<string> tags = _repository.GetAll();
             return View(tags);
         }
 
+        [Route("edit/{tag}")]
         public ActionResult Edit(string tag)
         {
             try
@@ -37,6 +42,7 @@ namespace MvcCms.Areas.Admin.Controllers
             }
         }
 
+        [Route("edit/{tag}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(string tag, string newTag)
@@ -63,6 +69,7 @@ namespace MvcCms.Areas.Admin.Controllers
             return RedirectToAction("index");
         }
 
+        [Route("delete/{tag}")]
         public ActionResult Delete(string tag)
         {
             try
@@ -76,6 +83,7 @@ namespace MvcCms.Areas.Admin.Controllers
             }
         }
 
+        [Route("delete/{tag}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string tag, bool foo)
