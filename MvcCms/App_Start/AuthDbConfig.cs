@@ -16,7 +16,7 @@ namespace MvcCms.App_Start
         {
             using (var userRepository = new UserRepository())
             {
-                var user = userRepository.GetUserByName("admin");
+                var user = userRepository.GetUserByNameAsync("admin");
 
                 if (user == null)
                 {
@@ -32,17 +32,17 @@ namespace MvcCms.App_Start
 
             using (var roleRepository = new RoleRepository())
             {
-                if (roleRepository.GetRoleByName("admin") == null)
+                if (roleRepository.GetRoleByNameAsync("admin") == null)
                 {
-                    roleRepository.Create(new IdentityRole("admin"));
+                    await roleRepository.CreateAsync(new IdentityRole("admin"));
                 }
-                if (roleRepository.GetRoleByName("editor") == null)
+                if (roleRepository.GetRoleByNameAsync("editor") == null)
                 {
-                    roleRepository.Create(new IdentityRole("editor"));
+                    await roleRepository.CreateAsync(new IdentityRole("editor"));
                 }
-                if (roleRepository.GetRoleByName("author") == null)
+                if (roleRepository.GetRoleByNameAsync("author") == null)
                 {
-                    roleRepository.Create(new IdentityRole("author"));
+                    await roleRepository.CreateAsync(new IdentityRole("author"));
                 }
             }
         }

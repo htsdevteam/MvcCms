@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace MvcCms.Data
 {
     public interface IRoleRepository : IDisposable
     {
-        IdentityRole GetRoleByName(string name);
+        Task<IdentityRole> GetRoleByNameAsync(string name);
         IEnumerable<IdentityRole> GetAllRoles();
-        void Create(IdentityRole role);
+        Task CreateAsync(IdentityRole role);
     }
 }

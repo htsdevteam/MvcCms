@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace MvcCms.Data
 {
@@ -21,9 +20,9 @@ namespace MvcCms.Data
             _manager = new RoleManager<IdentityRole>(_store);
         }
 
-        public IdentityRole GetRoleByName(string name)
+        public async Task<IdentityRole> GetRoleByNameAsync(string name)
         {
-            return _store.FindByNameAsync(name).Result;
+            return await _store.FindByNameAsync(name);
         }
 
         public IEnumerable<IdentityRole> GetAllRoles()
@@ -31,9 +30,9 @@ namespace MvcCms.Data
             return _store.Roles.ToArray();
         }
 
-        public void Create(IdentityRole role)
+        public async Task CreateAsync(IdentityRole role)
         {
-            _manager.Create(role);
+            await _manager.CreateAsync(role);
         }
 
         public void Dispose()

@@ -7,10 +7,15 @@ namespace MvcCms.Data
 {
     public interface IUserRepository : IDisposable
     {
-        CmsUser GetUserByName(string username);
+        Task<CmsUser> GetUserByNameAsync(string username);
         IEnumerable<CmsUser> GetAllUsers();
         Task CreateAsync(CmsUser user, string password);
-        void Delete(CmsUser user);
-        void Update(CmsUser user);
+        Task DeleteAsync(CmsUser user);
+        Task UpdateAsync(CmsUser user);
+        string HashPassword(string password);
+        bool VerifyUserPassword(string hashedPassword, string providedPassword);
+        Task AddUserToRoleAsync(CmsUser user, string role);
+        Task<IEnumerable<string>> GetRolesForUserAsync(CmsUser user);
+        Task RemoveUserFromRolesAsync(CmsUser user, params string[] roleNames);
     }
 }

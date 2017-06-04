@@ -24,48 +24,41 @@ namespace MvcCms.Areas.Admin.Controllers
         {
             _userRepository = new UserRepository();
             _roleRepository = new RoleRepository();
-            _userService = new UserService(ModelState,
-                _userRepository, _roleRepository);
+            _userService = new UserService(ModelState, _userRepository, _roleRepository);
         }
 
         // GET: Admin/User
         [Route("")]
         public ActionResult Index()
         {
-            using (var manager = new CmsUserManager())
-            {
-                var users = manager.Users.ToList();
-                return View(users);
-            }
+            var users = _userRepository.GetAllUsers();
+            return View(users);
         }
 
         [Route("edit/{username}")]
-        public ActionResult Edit(string username)
+        public async Task<ActionResult> Edit(string username)
         {
-            using (var userStore = new CmsUserStore())
-            using (var userManager = new CmsUserManager(userStore))
+            var user = await _userService.GetUserByNameAsync(username);
+            if (user == null)
             {
-                var user = userStore.FindByNameAsync(username).Result;
-                if (user == null)
-                {
-                    return HttpNotFound();
-                }
-
-                var vm = new UserViewModel
-                {
-                    UserName = user.UserName,
-                    Email = user.Email
-                };
-
-                return View(vm);
+                return HttpNotFound();
             }
+            return View(user);
         }
 
         [Route("edit/{username}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(UserViewModel vm)
+        public async Task<ActionResult> Edit(UserViewModel vm)
         {
+            var userUpdated = await _userService.UpdateUser(vm);
+            if (userUpdated)
+            {
+                return RedirectToAction("index");
+            }
+            return View(vm);
+
+
             using (var userStore = new CmsUserStore())
             using (var userManager = new CmsUserManager(userStore))
             {
@@ -121,8 +114,12 @@ namespace MvcCms.Areas.Admin.Controllers
         [Route("delete/{username}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(string username)
+        public async Task<ActionResult> Delete(string username)
         {
+            await _userService.DeleteAsync(username);
+            return RedirectToAction("index");
+
+
             using (var userStore = new CmsUserStore())
             using (var userManager = new CmsUserManager(userStore))
             {
@@ -140,7 +137,9 @@ namespace MvcCms.Areas.Admin.Controllers
         [Route("create")]
         public ActionResult Create()
         {
-            return View();
+            var vm = new UserViewModel();
+            vm.LoadUserRoles(_roleRepository.GetAllRoles());
+            return View(vm);
         }
 
         [Route("create")]
@@ -148,7 +147,8 @@ namespace MvcCms.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserViewModel vm)
         {
-            if (await _userService.CreateAsync(vm))
+            var completed = await _userService.CreateAsync(vm);
+            if (completed)
             {
                 return RedirectToAction("index");
             }

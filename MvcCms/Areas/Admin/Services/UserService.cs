@@ -25,6 +25,30 @@ namespace MvcCms.Areas.Admin.Services
             _roleRepository = roleRepository;
         }
 
+
+        public async Task<UserViewModel> GetUserByNameAsync(string name)
+        {
+            var user = await _userRepository.GetUserByNameAsync(name);
+            if (user == null)
+            {
+                return null;
+            }
+            var vm = new UserViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                DisplayName = user.DisplayName
+            };
+
+            var userRoles = await _userRepository.GetRolesForUserAsync(user);
+            vm.SelectedRole = userRoles.Count() > 1
+                ? userRoles.FirstOrDefault()
+                : userRoles.SingleOrDefault();
+            vm.LoadUserRoles(_roleRepository.GetAllRoles());
+
+            return vm;
+        }
+
         public async Task<bool> CreateAsync(UserViewModel vm)
         {
             if (!_modelState.IsValid)
@@ -32,10 +56,17 @@ namespace MvcCms.Areas.Admin.Services
                 return false;
             }
 
+            var existingUser = await _userRepository.GetUserByNameAsync(vm.UserName);
+            if (existingUser != null)
+            {
+                _modelState.AddModelError("", "The user already exists!");
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(vm.NewPassword))
             {
-                _modelState.AddModelError(string.Empty, "You must type a password.");
-                return true;
+                _modelState.AddModelError("", "You must type a password.");
+                return false;
             }
 
             var newUser = new CmsUser
@@ -46,8 +77,66 @@ namespace MvcCms.Areas.Admin.Services
             };
 
             await _userRepository.CreateAsync(newUser, vm.NewPassword);
+            await _userRepository.AddUserToRoleAsync(newUser, vm.SelectedRole);
 
             return true;
         }
+
+        public async Task<bool> UpdateUser(UserViewModel vm)
+        {
+            var user = await _userRepository.GetUserByNameAsync(vm.UserName);
+            if (user == null)
+            {
+                _modelState.AddModelError("", "The specified user does not exist.");
+                return false;
+            }
+
+            if (!_modelState.IsValid)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(vm.NewPassword))
+            {
+                if (string.IsNullOrWhiteSpace(vm.CurrentPassword))
+                {
+                    _modelState.AddModelError("", "The current password must be supplied.");
+                }
+
+                var passwordVerified = _userRepository.VerifyUserPassword(
+                    user.PasswordHash,
+                    vm.CurrentPassword);
+
+                if (!passwordVerified)
+                {
+                    _modelState.AddModelError("", "The current password does not match our records.");
+                }
+
+                var newHasedPassword = _userRepository.HashPassword(vm.NewPassword);
+                user.PasswordHash = newHasedPassword;
+            }
+
+            user.Email = vm.Email;
+            user.DisplayName = vm.DisplayName;
+
+            await _userRepository.UpdateAsync(user);
+
+            var roles = await _userRepository.GetRolesForUserAsync(user);
+            await _userRepository.RemoveUserFromRolesAsync(user, roles.ToArray());
+            await _userRepository.AddUserToRoleAsync(user, vm.SelectedRole);
+
+            return true;
+        }
+
+        public async Task DeleteAsync(string username)
+        {
+            var user = await _userRepository.GetUserByNameAsync(username);
+            if (user == null)
+            {
+                return;
+            }
+            await _userRepository.DeleteAsync(user);
+        }
+
     }
 }

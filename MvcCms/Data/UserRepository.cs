@@ -1,7 +1,9 @@
-﻿using MvcCms.Models;
+﻿using Microsoft.AspNet.Identity;
+using MvcCms.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace MvcCms.Data
 {
@@ -19,9 +21,9 @@ namespace MvcCms.Data
             _manager = new CmsUserManager(_store);
         }
 
-        public CmsUser GetUserByName(string username)
+        public async Task<CmsUser> GetUserByNameAsync(string username)
         {
-            return _store.FindByNameAsync(username).Result;
+            return await _store.FindByNameAsync(username);
         }
 
         public IEnumerable<CmsUser> GetAllUsers()
@@ -34,14 +36,40 @@ namespace MvcCms.Data
             await _manager.CreateAsync(user, password);
         }
 
-        public void Delete(CmsUser user)
+        public async Task DeleteAsync(CmsUser user)
         {
-            var result = _manager.DeleteAsync(user).Result;
+            await _manager.DeleteAsync(user);
         }
 
-        public void Update(CmsUser user)
+        public async Task UpdateAsync(CmsUser user)
         {
-            var result = _manager.UpdateAsync(user).Result;
+            await _manager.UpdateAsync(user);
+        }
+
+        public string HashPassword(string password)
+        {
+            return _manager.PasswordHasher.HashPassword(password);
+        }
+
+        public bool VerifyUserPassword(string hashedPassword, string providedPassword)
+        {
+            return _manager.PasswordHasher.VerifyHashedPassword(hashedPassword, providedPassword)
+                == PasswordVerificationResult.Success;
+        }
+
+        public async Task AddUserToRoleAsync(CmsUser user, string role)
+        {
+            await _manager.AddToRoleAsync(user.Id, role);
+        }
+
+        public async Task<IEnumerable<string>> GetRolesForUserAsync(CmsUser user)
+        {
+            return await _manager.GetRolesAsync(user.Id);
+        }
+
+        public async Task RemoveUserFromRolesAsync(CmsUser user, params string[] roleNames)
+        {
+            await _manager.RemoveFromRolesAsync(user.Id, roleNames);
         }
 
         public void Dispose()
