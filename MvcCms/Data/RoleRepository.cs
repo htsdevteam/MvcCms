@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,9 +26,9 @@ namespace MvcCms.Data
             return await _store.FindByNameAsync(name);
         }
 
-        public IEnumerable<IdentityRole> GetAllRoles()
+        public async Task<IEnumerable<IdentityRole>> GetAllRolesAsync()
         {
-            return _store.Roles.ToArray();
+            return await _store.Roles.ToArrayAsync();
         }
 
         public async Task CreateAsync(IdentityRole role)

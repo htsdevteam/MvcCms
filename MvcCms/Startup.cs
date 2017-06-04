@@ -17,7 +17,7 @@ namespace MvcCms
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/account/login")
+                LoginPath = new PathString("/admin/login")
             });
         }
     }

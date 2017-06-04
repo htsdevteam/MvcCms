@@ -44,7 +44,7 @@ namespace MvcCms.Areas.Admin.Services
             vm.SelectedRole = userRoles.Count() > 1
                 ? userRoles.FirstOrDefault()
                 : userRoles.SingleOrDefault();
-            vm.LoadUserRoles(_roleRepository.GetAllRoles());
+            vm.LoadUserRoles(await _roleRepository.GetAllRolesAsync());
 
             return vm;
         }

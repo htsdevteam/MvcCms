@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MvcCms.Models;
+using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace MvcCms.Data
 {
@@ -53,11 +55,25 @@ namespace MvcCms.Data
             }
         }
 
-        public IEnumerable<Post> GetAll()
+        public async Task<IEnumerable<Post>> GetAllAsync()
         {
             using (var db = new CmsContext())
             {
-                return db.Posts.Include("Author").OrderByDescending(p => p.Created).ToArray();
+                return await db.Posts.Include("Author")
+                    .OrderByDescending(p => p.Created)
+                    .ToArrayAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByAuthorAsync(string authorId)
+        {
+            using (var db = new CmsContext())
+            {
+                return await db.Posts.Include("Author")
+                    .Where(p => p.AuthorId == authorId)
+                    .OrderByDescending(p => p.Created)
+                    .ToArrayAsync();
+
             }
         }
 
@@ -75,5 +91,6 @@ namespace MvcCms.Data
                 db.SaveChanges();
             }
         }
+
     }
 }

@@ -8,7 +8,7 @@ namespace MvcCms.Data
     public interface IRoleRepository : IDisposable
     {
         Task<IdentityRole> GetRoleByNameAsync(string name);
-        IEnumerable<IdentityRole> GetAllRoles();
+        Task<IEnumerable<IdentityRole>> GetAllRolesAsync();
         Task CreateAsync(IdentityRole role);
     }
 }

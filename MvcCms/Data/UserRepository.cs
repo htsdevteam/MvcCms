@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Security.Claims;
+using System.Data.Entity;
 
 namespace MvcCms.Data
 {
@@ -26,9 +28,9 @@ namespace MvcCms.Data
             return await _store.FindByNameAsync(username);
         }
 
-        public IEnumerable<CmsUser> GetAllUsers()
+        public async Task<IEnumerable<CmsUser>> GetAllUsersAsync()
         {
-            return _store.Users.ToArray();
+            return await _store.Users.ToArrayAsync();
         }
 
         public async Task CreateAsync(CmsUser user, string password)
@@ -70,6 +72,17 @@ namespace MvcCms.Data
         public async Task RemoveUserFromRolesAsync(CmsUser user, params string[] roleNames)
         {
             await _manager.RemoveFromRolesAsync(user.Id, roleNames);
+        }
+
+        public async Task<CmsUser> GetLoginUserAsync(string userName, string password)
+        {
+            return await _manager.FindAsync(userName, password);
+        }
+
+        public async Task<ClaimsIdentity> CreateIdentityAsync(CmsUser user)
+        {
+            return await _manager.CreateIdentityAsync(user,
+                DefaultAuthenticationTypes.ApplicationCookie);
         }
 
         public void Dispose()
