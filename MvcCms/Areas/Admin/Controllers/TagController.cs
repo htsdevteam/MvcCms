@@ -34,7 +34,7 @@ namespace MvcCms.Areas.Admin.Controllers
             try
             {
                 var model = _repository.Get(tag);
-                return View(model);
+                return View(model: model);
             }
             catch (KeyNotFoundException)
             {
@@ -50,7 +50,7 @@ namespace MvcCms.Areas.Admin.Controllers
             if (string.IsNullOrWhiteSpace(newTag))
             {
                 ModelState.AddModelError("key", "New tag value cannot be empty.");
-                return View(tag);
+                return View(model: tag);
             }
 
             IEnumerable<string> tags = _repository.GetAll();
@@ -75,7 +75,7 @@ namespace MvcCms.Areas.Admin.Controllers
             try
             {
                 string model = _repository.Get(tag);
-                return View(model);
+                return View(model: model);
             }
             catch (KeyNotFoundException)
             {
@@ -86,7 +86,7 @@ namespace MvcCms.Areas.Admin.Controllers
         [Route("delete/{tag}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(string tag, bool foo)
+        public ActionResult Delete(string tag, string foo)
         {
             try
             {

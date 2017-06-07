@@ -4,6 +4,7 @@ using MvcCms.Data;
 using MvcCms.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,33 +15,52 @@ namespace MvcCms.App_Start
     {
         public async static Task RegisterAdmin()
         {
+            CmsUser admin = null;
             using (var userRepository = new UserRepository())
             {
-                var user = userRepository.GetUserByNameAsync("admin");
+                admin = await userRepository.GetUserByNameAsync("admin");
 
-                if (user == null)
+                if (admin == null)
                 {
-                    var adminUser = new CmsUser
+                    admin = new CmsUser
                     {
                         UserName = "admin",
                         Email = "admin@cms.com",
                         DisplayName = "Administrator"
                     };
-                    await userRepository.CreateAsync(adminUser, "Passw0rd1234");
+                    await userRepository.CreateAsync(admin, "Passw0rd1234");
                 }
             }
 
             using (var roleRepository = new RoleRepository())
             {
-                if (roleRepository.GetRoleByNameAsync("admin") == null)
+                IdentityRole adminRole = await roleRepository.GetRoleByNameAsync("admin");
+                if (adminRole == null)
                 {
                     await roleRepository.CreateAsync(new IdentityRole("admin"));
                 }
-                if (roleRepository.GetRoleByNameAsync("editor") == null)
+                bool isAdminInAdminRole = false;
+                foreach (IdentityUserRole userRole in admin.Roles)
+                {
+                    if (userRole.RoleId == adminRole.Id)
+                    {
+                        isAdminInAdminRole = true;
+                        break;
+                    }
+                }
+                if (!isAdminInAdminRole)
+                {
+                    using (var userRepository = new UserRepository())
+                    {
+                        await userRepository.AddUserToRoleAsync(admin, "admin");
+                    }
+                }
+
+                if (await roleRepository.GetRoleByNameAsync("editor") == null)
                 {
                     await roleRepository.CreateAsync(new IdentityRole("editor"));
                 }
-                if (roleRepository.GetRoleByNameAsync("author") == null)
+                if (await roleRepository.GetRoleByNameAsync("author") == null)
                 {
                     await roleRepository.CreateAsync(new IdentityRole("author"));
                 }

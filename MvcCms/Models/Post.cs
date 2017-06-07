@@ -33,7 +33,7 @@ namespace MvcCms.Models
             set { _tags = value; }
         }
 
-        public string CombinedTages
+        public string CombinedTags
         {
             get { return string.Join(",", _tags); }
             set { _tags = value.Split(',').Select(s => s.Trim()).ToList(); }
