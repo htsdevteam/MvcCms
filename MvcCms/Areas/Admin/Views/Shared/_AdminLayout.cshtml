@@ -14,7 +14,10 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         @{ 
-                            Html.RenderAction("AdminMenu", new { controller = "admin", area = "admin" });
+                            Html.RenderAction("AdminMenu",
+                                new { controller = "admin", area = "admin" });
+                            Html.RenderAction("AuthenticationLink",
+                                new { controller = "admin", area = "admin" });
                         }
                     </ul>
                 </div>

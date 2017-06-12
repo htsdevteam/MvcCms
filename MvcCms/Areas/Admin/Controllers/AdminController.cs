@@ -119,6 +119,26 @@ namespace MvcCms.Areas.Admin.Controllers
             return PartialView(items);
         }
 
+        [AllowAnonymous]
+        public PartialViewResult AuthenticationLink()
+        {
+            var item = new AdminMenuItem
+            {
+                RouteInfo = new { controller = "admin", area = "admin" }
+            };
+            if (User.Identity.IsAuthenticated)
+            {
+                item.Text = "Logout";
+                item.Action = "logout";
+            }
+            else
+            {
+                item.Text = "Login";
+                item.Action = "login";
+            }
+            return PartialView("_menuLink", item);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (!_isDisposed)

@@ -2,7 +2,5 @@
 
 
 @foreach (var item in Model) {
-    <li>
-        @Html.ActionLink(item.Text, item.Action, item.RouteInfo)
-    </li>
+    @Html.Partial("_menuLink", item)
 }
