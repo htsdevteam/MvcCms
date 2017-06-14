@@ -4,6 +4,7 @@
         <meta name="viewport" content="width=device-width" />
         <link href="~/css/bootstrap.min.css" rel="stylesheet" />
         <link href="~/css/Site.css" rel="stylesheet" />
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
         <title>@ViewBag.Title</title>
     </head>
     <body>
@@ -26,5 +27,9 @@
         <div>
             @RenderBody()
         </div>
+        <script src="~/js/jquery-2.1.1.min.js"></script>
+        <script src="~/js/jquery-ui.min-1.11.1.js"></script>
+        <script src="~/js/admin.js"></script>
+        @RenderSection("scripts", required: false)
     </body>
 </html>

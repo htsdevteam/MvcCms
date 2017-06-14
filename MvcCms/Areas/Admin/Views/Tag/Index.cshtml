@@ -7,6 +7,7 @@
 
 <h2>Index</h2>
 
+@AntiForgery.GetHtml()
 <table class="table">
     <tr>
         <th>Tag name</th>
@@ -20,7 +21,8 @@
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { tag=item }) |
-            @Html.ActionLink("Delete", "Delete", new { tag=item })
+            @Html.ActionLink("Delete", "Delete", new { tag = item },
+                new { data_action = "delete", data_value = item })
         </td>
     </tr>
 }
