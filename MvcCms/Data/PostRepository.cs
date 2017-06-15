@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using MvcCms.Models;
 using System.Data.Entity;
 using System.Threading.Tasks;
@@ -70,6 +69,7 @@ namespace MvcCms.Data
             using (var db = new CmsContext())
             {
                 return await db.Posts.Include("Author")
+                    .Include("Author")
                     .Where(p => p.AuthorId == authorId)
                     .OrderByDescending(p => p.Created)
                     .ToArrayAsync();
@@ -92,5 +92,30 @@ namespace MvcCms.Data
             }
         }
 
+        public async Task<IEnumerable<Post>> GetPublishedPostsAsync()
+        {
+            using (var db = new CmsContext())
+            {
+                return await db.Posts.Where(p => p.Published < DateTime.Now)
+                    .Include("Author")
+                    .OrderByDescending(p => p.Published)
+                    .ToArrayAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByTag(string tagId)
+        {
+            using (var db = new CmsContext())
+            {
+                var posts = await db.Posts
+                    .Include("Author")
+                    .Where(p => p.CombinedTags.Contains(tagId))
+                    .ToListAsync();
+                posts = posts.Where(p => p.Tags
+                        .Contains(tagId, StringComparer.CurrentCultureIgnoreCase))
+                    .ToList();
+                return posts;
+            }
+        }
     }
 }

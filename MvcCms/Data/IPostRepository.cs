@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using MvcCms.Models;
 
@@ -13,5 +12,7 @@ namespace MvcCms.Data
         void Delete(string id);
         Task<IEnumerable<Post>> GetAllAsync();
         Task<IEnumerable<Post>> GetPostsByAuthorAsync(string authorId);
+        Task<IEnumerable<Post>> GetPublishedPostsAsync();
+        Task<IEnumerable<Post>> GetPostsByTag(string tagId);
     }
 }
