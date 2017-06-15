@@ -8,3 +8,13 @@
 <h2>Index</h2>
 
 @Html.Raw(string.Join("<hr />", Model.Select(p => Html.Partial("_renderPost", p))))
+
+@if (ViewBag.PreviousPage > 0)
+{
+    @Html.ActionLink("Previous page", "page", new { controller = "home", page = ViewBag.PreviousPage})
+}
+&nbsp;&nbsp;
+@if (ViewBag.NextPage > 0)
+{
+    @Html.ActionLink("Next page", "page", new { controller = "home", page = ViewBag.NextPage })
+}

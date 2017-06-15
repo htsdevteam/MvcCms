@@ -12,6 +12,8 @@ namespace MvcCms.Controllers
     public class HomeController : Controller
     {
         private readonly IPostRepository _postRepository;
+        private readonly int _pageSize = 2;
+
 
         public HomeController(IPostRepository postRepository)
         {
@@ -26,8 +28,32 @@ namespace MvcCms.Controllers
         [Route("")]
         public async Task<ActionResult> Index()
         {
-            var posts = await _postRepository.GetPublishedPostsAsync();
+            var posts = await _postRepository.GetPageAsync(1, _pageSize);
+
+            ViewBag.PreviousPage = 0;
+            ViewBag.NextPage = Decimal.Divide(_postRepository.CountPublished, _pageSize) > 1
+                ? 2
+                : -1;
+
             return View(posts);
+        }
+
+        [Route("page/{page:int}")]
+        public async Task<ActionResult> Page(int page = 1)
+        {
+            if (page < 2)
+            {
+                return RedirectToAction("index");
+            }
+
+            var posts = await _postRepository.GetPageAsync(page, _pageSize);
+
+            ViewBag.PreviousPage = page - 1;
+            ViewBag.NextPage = Decimal.Divide(_postRepository.CountPublished, _pageSize) > page
+                ? page + 1
+                : -1;
+
+            return View("index", posts);
         }
 
         //root/posts/post-id
